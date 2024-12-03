@@ -42,6 +42,7 @@ final class ViewController: UIViewController {
     
     func seupTableView() {
         tableView.dataSource = self
+        tableView.delegate = self    //⭐️ 꼭 해줘야함
         // 테이블 뷰 셀의 높이설정
         tableView.rowHeight = 60
         
@@ -93,6 +94,24 @@ extension ViewController: UITableViewDataSource {
         return cell
         
     }
+    
+}
+
+extension ViewController: UITableViewDelegate {
+    
+    //선택적인 메서드, 셀이 선택되었을때 동작이 전달
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // 다음화면으로 넘어가는 코드
+        let detailVC = DetailViewController()
+        
+        
+        
+        navigationController?.pushViewController(detailVC, animated: true)
+        
+        
+        
+    }
+    
     
     
     
