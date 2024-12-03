@@ -82,9 +82,12 @@ extension ViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MemberCell", for: indexPath) as! MyTableViewCell
         
         // 셀을 그리는 방식, 서브스크립트 구현한 것을 활용
-        cell.mainImageView.image = memberListManager[indexPath.row].memberImage
-        cell.memberNameLabel.text = memberListManager[indexPath.row].name
-        cell.addressLabel.text = memberListManager[indexPath.row].address
+        // 셀에 접근해서 직접적으로 세팅해주는 방법이 아닌 다른 방법
+        // 셀에서 멤버를 저장속성으로 구현, 속성감시자, 멤버만 전달하는 방식으로 구현
+        cell.member = memberListManager[indexPath.row]
+        // 멤버라는 속성에 배열에서 멤버를 하나 꺼내서 전달
+        // 저장속성에 멤버를 전달을 하면 셀에서 알아서 꺼내서 이미지,레이블 등을 표시해주는 방식
+        // 알아서 실행해주기 때문에 훨씬 편함
         cell.selectionStyle = .none
         
         return cell

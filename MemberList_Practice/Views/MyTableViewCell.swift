@@ -8,6 +8,19 @@
 import UIKit
 
 class MyTableViewCell: UITableViewCell {
+    //MARK: - 멤버 저장속성 구현
+    // 멤버가 변할때마다 자동으로 업데이트 되도록 구현 didSet(속성 감시자) ⭐️
+    // 뷰컨트롤러에서 멤버를 전달 -> 셀에 표시
+    // 멤버라는 저장속성을 항상 감시하는 속성감시자, 변할때마다 바로바로 실행하도록
+    var member: Member? {
+        didSet {
+            // 굳이 옵셔널 바인딩을 해주지 않아도됨
+            guard var member = member else { return }
+            mainImageView.image = member.memberImage
+            memberNameLabel.text = member.name
+            addressLabel.text = member.address
+        }
+    }
     
     //MARK: - UI구현
     
