@@ -3,7 +3,10 @@
 //  MemberList_Practice
 //
 //  Created by t2023-m0033 on 12/3/24.
-//
+//  viewWillAppear를 통해 업데이트 하도록 했었음
+//  비효율적임, 계속 업데이트함 , 업데이트 하지 않고 돌아갔을때도 리로드함
+//  델리게이트패턴으로 버튼을 눌러서 실제로 업데이트 됐을 때만 리로드 되도록 하려고함
+//  정보가 업데이트가 되었으니 너가 구현을 해 ( 다른 객체에게 ) - 커스텀 델리게이트
 
 import UIKit
 
@@ -34,12 +37,13 @@ final class ViewController: UIViewController {
         setupTableViewConstraints()
     }
 
+    // 커스텀 델리게이트로 구현시 없어도됨
     // 델리게이트가 아닌 방식으로 구현할때는 화면 리프레시⭐️
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        // 뷰가 다시 나타날때, 테이블뷰를 리로드
-        tableView.reloadData()
-    }
+//    override func viewWillAppear(_ animated: Bool) {
+//        super.viewWillAppear(animated)
+//        // 뷰가 다시 나타날때, 테이블뷰를 리로드
+//        tableView.reloadData()
+//    }
         
     func setupNaviBar() {
         title = "회원 목록"
@@ -71,6 +75,8 @@ final class ViewController: UIViewController {
         memberListManager.makeMembersListDatas() // 일반적으로는 서버에 요청
     }
     
+    //MARK: - 오토레이아웃 셋팅
+    
     // 테이블뷰의 오토레이아웃 설정
     func setupTableViewConstraints() {
         view.addSubview(tableView)
@@ -90,7 +96,7 @@ final class ViewController: UIViewController {
         let detailVC = DetailViewController()
         
         // 다음 화면의 대리자 설정 (다음 화면의 대리자는 지금 현재의 뷰컨트롤러)
-        //detailVC.delegate = self
+        detailVC.delegate = self
         
         // 화면이동
         navigationController?.pushViewController(detailVC, animated: true)
@@ -127,25 +133,51 @@ extension ViewController: UITableViewDataSource {
     
 }
 
+//MARK: - 테이블뷰 델리게이트 구현 (셀이 선택되었을때)
 extension ViewController: UITableViewDelegate {
     
+    // 셀이 선택이 되었을때 어떤 동작을 할 것인지 뷰컨트롤러에게 물어봄
     //선택적인 메서드, 셀이 선택되었을때 동작이 전달
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // 다음화면으로 넘어가는 코드
         let detailVC = DetailViewController()
         
+        // 다음 화면의 대리자 설정 (다음 화면의 대리자는 지금 현재의 뷰컨트롤러)
+        // DVC에 접근할 수 있는 부분이 이 부분이기 때문에 여기서 델리게이트 설정
+        // self -> VC, DVC의 대리자 는 내가 될거야
+        detailVC.delegate = self
+        
+        // 다음 화면에 멤버를 전달
         let array = memberListManager.getMembersList()
         detailVC.member = array[indexPath.row]
         
         
-        
+        // 화면이동
         navigationController?.pushViewController(detailVC, animated: true)
         
-        
-        
+         
     }
     
+}
+
+
+//MARK: - 멤버 추가하거나, 업데이트에 대한 델리게이트 구현
+// 프로토콜을 채택함으로써 대리자 역할이 가능해짐
+extension ViewController: MemberDelegate {
+    // 멤버가 추가되면 실행할 메서드 구현
+    func addNewMember(_ member: Member) {
+        // 모델에 멤버 추가
+        memberListManager.makeNewMember(member)
+        // 테이블뷰를 다시 로드 (다시 그리기)
+        tableView.reloadData()
+    }
     
-    
-    
+    // 멤버의 정보가 업데이트 되면 실행할 메서드 구현
+    func update(index: Int, _ member: Member) {
+        print("업데이트")
+        // 모델에 멤버 정보 업데이트
+        memberListManager.updateMemberInfo(index: index, member)
+        // 테이블뷰를 다시 로드 (다시 그리기)
+        tableView.reloadData()
+    }
 }

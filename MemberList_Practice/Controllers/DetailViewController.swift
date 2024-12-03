@@ -13,16 +13,22 @@ final class DetailViewController: UIViewController {
     //뷰컨에서 직접적으로 디테일뷰에 전달해줘도됨
     private let detailView = DetailView()
     
+    // 대리자설정을 위한 변수(델리게이트)
+    // DC의 대리자 는 멤버델리게이트를 채택한 타입이 대리자가 될 수 있는거야 -> VC
+    // 강한순환참조가 발생할 수 있음 첫화면 VC -> DVC, DVC -> VC 델리게이트 - weak로 선언해줌
+    weak var delegate: MemberDelegate?
+    
     // 멤버를 전 화면에서 전달받아야함
     // 어차피 여기있는 멤버가 디테일뷰까지 전달이 되어야 표시됨 -> 저장속성으로 구현
     var member: Member?
     
+    // MVC패턴을 위해서, view교체
     override func loadView() {
         // 뷰를 교체해줌
         view = detailView
     }
     
-
+    //MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -91,15 +97,22 @@ final class DetailViewController: UIViewController {
             newMember.memberImage = detailView.mainImageView.image
             
             // 1) 델리게이트 방식이 아닌 구현⭐️
-            let index = navigationController!.viewControllers.count - 2
+            // 기존에 뷰윌어피어를 통해 업데이트 했던 방식
+          //  let index = navigationController!.viewControllers.count - 2
             // 전 화면에 접근하기 위함
-            let vc = navigationController?.viewControllers[index] as! ViewController
+          //  let vc = navigationController?.viewControllers[index] as! ViewController
             // 전 화면의 모델에 접근해서 멤버를 추가
-            vc.memberListManager.makeNewMember(newMember)
+        //    vc.memberListManager.makeNewMember(newMember)
             
             
+            // 대리자한테 업데이트를 하라고 하는 방식
+            // 실제로 대리자의 역할은 전 화면이 해야함, 뷰컨
+            // 여기(DC) 에서 업데이트한 내용을 VC 한테 전달해야함
+            // 첫째, 프로토콜을 만들어야함 member 모델에서
             // 2) 델리게이트 방식으로 구현⭐️
-            //delegate?.addNewMember(newMember)
+            // 델리게이트한테 알려줌, 대리자한테 새로운 멤버가 생겼고 전달하고있어 메서드 실행해, VC에 있는 메서드가 실행됨
+            // 기존에 했던 테이블뷰,텍스트필드의 경우 내부에서 이런 함수를 호출해줬기 때문에 메서드구현을 안해도 됐었음
+            delegate?.addNewMember(newMember)
             
             
         // [2] 멤버가 있다면 (멤버의 내용을 업데이트 하기 위한 설정)
@@ -117,28 +130,29 @@ final class DetailViewController: UIViewController {
             detailView.member = member
             
             // 1) 델리게이트 방식이 아닌 구현⭐️
-            let index = navigationController!.viewControllers.count - 2
+            //let index = navigationController!.viewControllers.count - 2
             
             // 네비게이션 컨트롤러가 화면을 넘겨주었으니, 정보를 가지고 잇을거야
             // navigationController?.viewControllers[0] -> 뷰컨, 1 -> 디테일뷰컨
             // 바로 전 화면 == count - 1
             
             // 전 화면에 접근하기 위함
-            let vc = navigationController?.viewControllers[index] as! ViewController
+           // let vc = navigationController?.viewControllers[index] as! ViewController
             // 전 화면의 모델에 접근해서 멤버를 업데이트
-            vc.memberListManager.updateMemberInfo(index: memberId, member!)
+           // vc.memberListManager.updateMemberInfo(index: memberId, member!)
             
             // 위의 과정이 복잡하기 때문에
             // 델리게이트 방식으로 구현⭐️
-            //delegate?.update(index: memberId, member!)
+            delegate?.update(index: memberId, member!)
         }
         
         // (일처리를 다한 후에) 전화면으로 돌아가기
         self.navigationController?.popViewController(animated: true)
-        
-        
     }
-
+    
+    deinit {
+        print("디테일 뷰컨트롤러 해제")
+    }
 }
 
 
