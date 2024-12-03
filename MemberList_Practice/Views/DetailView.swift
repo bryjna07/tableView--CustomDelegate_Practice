@@ -246,6 +246,7 @@ final class DetailView: UIView {
         // view가 셀프 자체이기때문에 view에 접근할필요 X
         backgroundColor = .white
         setupStackView()
+        setupNotification()
         setupMemberIdTextField()
     }
     
@@ -256,6 +257,17 @@ final class DetailView: UIView {
     func setupStackView() {
         self.addSubview(stackView)
     }
+    
+    //MARK: - 노티피케이션 셋팅
+    
+    func setupNotification() {
+        // 노티피케이션의 등록 ⭐️
+        // 키보드가 올라올때 알림을 발송하는 기능
+        // (OS차원에서 어떤 노티피케이션이 발생하는지 이미 정해져 있음)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveUpAction), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveDownAction), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
     
     func setupMemberIdTextField() {
         memberIdTextField.delegate = self
@@ -301,6 +313,33 @@ final class DetailView: UIView {
         ])
     }
     
+    //MARK: - 키보드가 나타날때와 내려갈때의 애니메이션 셋팅
+    
+    @objc func moveUpAction() {
+        stackViewTopConstraint.constant = -20
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
+    }
+    
+    @objc func moveDownAction() {
+        stackViewTopConstraint.constant = 10
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
+    }
+    // 화면 터치시 키보드 내림
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.endEditing(true)
+    }
+    
+    //MARK: - 소멸자 구현
+    
+    deinit {
+        // 노티피케이션의 등록 해제 (해제안하면 계속 등록될 수 있음) ⭐️
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
 }
 
 
