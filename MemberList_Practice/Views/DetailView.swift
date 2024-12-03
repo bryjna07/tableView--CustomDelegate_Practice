@@ -246,7 +246,7 @@ final class DetailView: UIView {
         // view가 셀프 자체이기때문에 view에 접근할필요 X
         backgroundColor = .white
         setupStackView()
-  
+        setupMemberIdTextField()
     }
     
     required init?(coder: NSCoder) {
@@ -255,6 +255,10 @@ final class DetailView: UIView {
     
     func setupStackView() {
         self.addSubview(stackView)
+    }
+    
+    func setupMemberIdTextField() {
+        memberIdTextField.delegate = self
     }
     
     //MARK: - 오토레이아웃 셋팅
@@ -297,7 +301,20 @@ final class DetailView: UIView {
         ])
     }
     
-    
-    
-    
+}
+
+
+//MARK: - 텍스트필드 델리게이트 구현
+
+extension DetailView: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        // 멤버 아이디는 수정 못하도록 설정 (멤버아이디의 텍스트필드는 입력 안되도록 설정)
+        if textField == memberIdTextField {
+            return false
+        }
+        
+        // 나머지 텍스트필드는 관계없이 설정 가능
+        return true
+    }
 }
