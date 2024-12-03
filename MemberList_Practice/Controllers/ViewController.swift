@@ -24,6 +24,13 @@ final class ViewController: UIViewController {
         setupTableViewConstraints()
     }
 
+    // 델리게이트가 아닌 방식으로 구현할때는 화면 리프레시⭐️
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // 뷰가 다시 나타날때, 테이블뷰를 리로드
+        tableView.reloadData()
+    }
+        
     func setupNaviBar() {
         title = "회원 목록"
         
