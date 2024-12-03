@@ -44,6 +44,9 @@ final class ViewController: UIViewController {
         tableView.dataSource = self
         // 테이블 뷰 셀의 높이설정
         tableView.rowHeight = 60
+        
+        // 셀의 등록⭐️ (타입인스턴스 - 메타타입)
+        tableView.register(MyTableViewCell.self, forCellReuseIdentifier: "MemberCell")
     }
     
     func setupDatas() {
@@ -73,10 +76,18 @@ extension ViewController: UITableViewDataSource {
     }
     
     
-    
+    // 셀을 구현했으니 이 메서드를 구현해주면됨
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // 위에서 등록을 해줘서 사용가능
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MemberCell", for: indexPath) as! MyTableViewCell
         
-        return UITableViewCell()
+        // 셀을 그리는 방식, 서브스크립트 구현한 것을 활용
+        cell.mainImageView.image = memberListManager[indexPath.row].memberImage
+        cell.memberNameLabel.text = memberListManager[indexPath.row].name
+        cell.addressLabel.text = memberListManager[indexPath.row].address
+        cell.selectionStyle = .none
+        
+        return cell
         
     }
     
