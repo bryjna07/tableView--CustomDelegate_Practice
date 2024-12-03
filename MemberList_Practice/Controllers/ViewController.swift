@@ -11,15 +11,45 @@ final class ViewController: UIViewController {
     
     // 테이블 뷰, 굳이 뷰를 따로 나누지 않음
     private let tableView = UITableView()
+    // 뷰컨에서 비즈니스로직에 접근할 수 있는 매니저 만들기
+    var memberListManager = MemberListManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        tableView.dataSource = self
-        
+        view.backgroundColor = .white
+        // 배열의 데이터 생성하도록⭐️
+        setupDatas()
+        seupTableView()
+        setupNaviBar()
         setupTableViewConstraints()
     }
 
+    func setupNaviBar() {
+        title = "회원 목록"
+        
+        // 네비게이션바 설정관련
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()  // 불투명으로
+        appearance.backgroundColor = .white
+        navigationController?.navigationBar.tintColor = .systemBlue
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        
+        // 네비게이션바 오른쪽 상단 버튼 설정
+       // self.navigationItem.rightBarButtonItem = self.plusButton
+    }
+    
+    func seupTableView() {
+        tableView.dataSource = self
+        // 테이블 뷰 셀의 높이설정
+        tableView.rowHeight = 60
+    }
+    
+    func setupDatas() {
+        memberListManager.makeMembersListDatas() // 일반적으로는 서버에 요청
+    }
+    
     // 테이블뷰의 오토레이아웃 설정
     func setupTableViewConstraints() {
         view.addSubview(tableView)
@@ -38,9 +68,8 @@ final class ViewController: UIViewController {
 
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return 5
-        
+        // 배열을 달라고 요청, 테이블뷰에 리턴 -> 표시
+        return memberListManager.getMembersList().count
     }
     
     
