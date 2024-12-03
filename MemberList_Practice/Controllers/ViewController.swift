@@ -104,6 +104,9 @@ extension ViewController: UITableViewDelegate {
         // 다음화면으로 넘어가는 코드
         let detailVC = DetailViewController()
         
+        let array = memberListManager.getMembersList()
+        detailVC.member = array[indexPath.row]
+        
         
         
         navigationController?.pushViewController(detailVC, animated: true)

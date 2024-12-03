@@ -9,9 +9,11 @@ import UIKit
 // 더이상 상속하지 않음
 final class DetailViewController: UIViewController {
     
+    //뷰컨에서 직접적으로 디테일뷰에 전달해줘도됨
     private let detailView = DetailView()
     
     // 멤버를 전 화면에서 전달받아야함
+    // 어차피 여기있는 멤버가 디테일뷰까지 전달이 되어야 표시됨 -> 저장속성으로 구현
     var member: Member?
     
     override func loadView() {
@@ -23,16 +25,21 @@ final class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupData()
         setupButtonAction()
       
+      
+    }
+    
+    // 멤버를 뷰에 전달⭐️ (뷰에서 알아서 화면 셋팅)
+    private func setupData() {
+        detailView.member = member
     }
     
     // 디테일뷰에 있는 save버튼의 타겟 설정⭐️
     func setupButtonAction() {
         detailView.saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
     }
-    
-    
     
     //MARK: - SAVE버튼 또는 UPDATE버튼이 눌렸을때의 동작
     

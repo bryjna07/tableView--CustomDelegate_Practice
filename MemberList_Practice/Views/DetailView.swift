@@ -8,6 +8,40 @@
 import UIKit
 
 final class DetailView: UIView {
+    
+    //MARK: - 멤버 저장속성 구현
+    // 멤버 데이터가 바뀌면 ===> didSet(속성감시자) 실행
+    // 속성감시자도 (저장 속성을 관찰하는) 어쨌든 자체는 메서드임
+    var member: Member? {
+        didSet {
+            guard var member = member else {
+                // 멤버가 없으면 (즉, 새로운 멤버를 추가할때의 상황)
+                // 멤버가 없으면 버튼을 "SAVE"라고 셋팅
+                saveButton.setTitle("SAVE", for: .normal)
+                // 멤버가 없으면, 타입 저장 속성의 현재 숫자 가져오기
+                memberIdTextField.text = "\(Member.memberNumbers)"
+                return
+            }
+            // 멤버가 있으면
+            mainImageView.image = member.memberImage
+            memberIdTextField.text = "\(member.memberId)"
+            nameTextField.text = member.name
+            phoneNumberTextField.text = member.phone
+            addressTextField.text = member.address
+            
+            // 나이항목 (옵셔널 정수형)
+            guard let age = member.age else {
+                // 나이 항목이 없으면 빈문자열로 표시
+                ageTextField.text = ""
+                return
+            }
+            // 나이 항목이 있으면 정수 ==> 문자열 변환 표기
+            ageTextField.text = "\(age)"
+            
+            // 나이항목의 구현
+            //ageTextField.text = member.age != nil ? "\(member.age!)" : ""
+        }
+    }
 
     //MARK: - UI구현
     
